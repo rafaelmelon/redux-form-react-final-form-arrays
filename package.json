@@ -4,6 +4,8 @@
   "private": true,
   "dependencies": {
     "bootstrap": "^4.3.1",
+    "express": "^4.17.1",
+    "express-favicon": "^2.0.1",
     "final-form": "^4.18.5",
     "final-form-arrays": "^3.0.1",
     "react": "^16.10.2",
@@ -21,7 +23,8 @@
     "redux-thunk": "^2.3.0"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "node server.js",
+    "dev": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
