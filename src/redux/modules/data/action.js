@@ -1,8 +1,11 @@
-export const DATA_GET_ALL = "DATA_GET_ALL";
+export const DATA_CREATE_ARRAY = "DATA_CREATE_ARRAY";
+export const DATA_REMOVE_ARRAY = "DATA_REMOVE_ARRAY";
 
-export const getAll = payload => ({
-  type: DATA_GET_ALL,
+export const createDataArray = payload => ({
+  type: DATA_CREATE_ARRAY,
   payload,
 });
 
-
+export const removeDataArray = () => ({
+  type: DATA_REMOVE_ARRAY,
+});

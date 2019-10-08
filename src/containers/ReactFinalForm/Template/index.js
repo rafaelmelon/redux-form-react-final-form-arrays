@@ -4,16 +4,17 @@ import arrayMutators from "final-form-arrays";
 import { FieldArray } from "react-final-form-arrays";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
-const getItemStyle = (isDragging, draggableStyle) => ({
-  // change background colour if dragging
-  background: isDragging ? "lightgreen" : "grey",
+import { Input } from '../../../components/index';
 
-  // styles we need to apply on draggables
+const required = value => (value ? undefined : "Required");
+
+const getItemStyle = (isDragging, draggableStyle) => ({
+  background: isDragging ? "lightgreen" : "AliceBlue",
   ...draggableStyle
-});
+}); 
 
 const getListStyle = isDraggingOver => ({
-  background: isDraggingOver ? "lightblue" : "lightgrey",
+  background: isDraggingOver ? "lightblue" : "SteelBlue",
 });
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
@@ -32,135 +33,195 @@ const makeOnDragEndFunction = fields => result => {
 };
 let nextId = 1;
 
-const Template = () => (
-  <Form
-    onSubmit={onSubmit}
-    mutators={{
-      ...arrayMutators
-    }}
-    render={({
-      handleSubmit,
-      form: { mutators: { push, pop  } }, // injected from final-form-arrays above
-      pristine,
-      reset,
-      submitting,
-      values
-    }) => {
-      return (
-        <form onSubmit={handleSubmit}>
-          <div className="row mb-3">
-            <div className="col">
-              <div className="form-group">
-                <label>Company</label>
-                <Field className="form-control" name="company" component="input" />
+const Template = props => {
+  const { onRemoveDataArray, onCreateDataArray, dataArray } = props.customProps
+  
+  const handlePopulate = callback => {
+    if (dataArray) {
+      dataArray.forEach(item => {
+        callback("customers", item)
+      })
+    }
+  }
+
+  return (
+    <Form
+      onSubmit={onSubmit}
+      mutators={{
+        ...arrayMutators
+      }}
+      render={formProps => {
+        const {
+          handleSubmit,
+          form: { reset, mutators: { push, pop  } }, // injected from final-form-arrays above
+          pristine,
+          submitting,
+          values
+        } = formProps;
+
+        return (
+          <form onSubmit={handleSubmit}>
+            <div className="row mb-3">
+              <div className="col">
+                <div className="d-flex justify-content-start">
+                  <button
+                    className="btn btn-primary mr-3"
+                    type="button"
+                    onClick={() => push("customers", { id: nextId++ })}
+                  >
+                    Add
+                  </button>
+                  <button 
+                    className="btn btn-outline-danger mr-3" 
+                    type="button" 
+                    onClick={() => pop("customers")}
+                  >
+                    Remove
+                  </button>
+                  <button 
+                    className="btn btn-primary mr-3" 
+                    type="submit" 
+                    disabled={submitting || pristine}
+                  >
+                    Submit
+                  </button>
+                  <button
+                    className="btn btn-secondary"
+                    type="button"
+                    onClick={reset}
+                    disabled={submitting || pristine}
+                  >
+                    Reset
+                  </button>
+                </div>
+              </div>
+              <div className="col-md-2">
+                <Field
+                  name="customersLength"
+                  component={Input}
+                  placeholder="0"
+                  type="number"
+                />
+              </div>
+              <div className="col">
+                <div className="d-flex justify-content-end">
+                  <button 
+                    className="btn btn-primary mr-3" 
+                    type="button" 
+                    onClick={() => onCreateDataArray(values.customersLength || 0)}
+                  >
+                    Create data
+                  </button>
+                  <button 
+                    className="btn btn-primary mr-3" 
+                    type="button" 
+                    onClick={() => handlePopulate(push)}
+                    disabled={!dataArray}
+                  >
+                    Populate
+                  </button>
+                  <button 
+                    className="btn btn-outline-danger" 
+                    type="button" 
+                    onClick={onRemoveDataArray}
+                    disabled={!dataArray}
+                  >
+                    Remove data
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-          <div className="row mb-3">
-            <div className="col">
-              <button
-                className="btn btn-primary mr-3"
-                type="button"
-                onClick={() => push("customers", { id: nextId++ })}
-              >
-                Add Customer
-              </button>
-              <button className="btn btn-danger" type="button" onClick={() => pop("customers")}>
-                Remove Customer
-              </button>
-            </div>
-          </div>
-          <FieldArray name="customers">
-            {({ fields }) => (
-              <DragDropContext onDragEnd={makeOnDragEndFunction(fields)}>
-                <Droppable droppableId="droppable">
-                  {(provided, snapshot) => (
-                    <div
-                      ref={provided.innerRef}
-                      className="row mb-3"
-                      style={getListStyle(snapshot.isDraggingOver)}
-                    >
-                      <div className="col p-3">
-                        {fields.map((name, index) => (
-                          <Draggable
-                            key={name}
-                            draggableId={name}
-                            index={index}
-                          >
-                            {(provided, snapshot) => (
-                              <div
-                                className="form-row p-3"
-                                ref={provided.innerRef}
-                                {...provided.draggableProps}
-                                {...provided.dragHandleProps}
-                                style={getItemStyle(
-                                  snapshot.isDragging,
-                                  provided.draggableProps.style
-                                )}
-                              >
-                                <div className="form-group col-md-1">
-                                  <Field className="form-control" name={`${name}.id`}>
-                                    {({ input: { name, value } }) => (
-                                      <label name={name}>Cust. #{value}</label>
-                                    )}
-                                  </Field>
+            <FieldArray name="customers">
+              {({ fields }) => (
+                <DragDropContext onDragEnd={makeOnDragEndFunction(fields)}>
+                  <Droppable droppableId="droppable">
+                    {(provided, snapshot) => (
+                      <div
+                        ref={provided.innerRef}
+                        className="row mb-3"
+                        style={getListStyle(snapshot.isDraggingOver)}
+                      >
+                        <div className="col-md-4 mt-3">
+                          <Field
+                            className="form-control"
+                            name="Company"
+                            component={Input}
+                            placeholder="Company"
+                            validate={required}
+                          />
+                        </div>
+                        <div className="col-md-12 p-3">
+                          {fields.map((name, index) => (
+                            <Draggable
+                              key={name}
+                              draggableId={name}
+                              index={index}
+                            >
+                              {(provided, snapshot) => (
+                                <div
+                                  className="form-row p-3 border-bottom"
+                                  ref={provided.innerRef}
+                                  {...provided.draggableProps}
+                                  {...provided.dragHandleProps}
+                                  style={getItemStyle(
+                                    snapshot.isDragging,
+                                    provided.draggableProps.style
+                                  )}
+                                >
+                                  <div className="col">
+                                    <Field name={`${name}.id`}>
+                                      {({ input: { name, value } }) => (
+                                        <label name={name}>Cust. #{value}</label>
+                                      )}
+                                    </Field>
+                                  </div>
+                                  <div className="col">
+                                    <Field
+                                      name={`${name}.firstName`}
+                                      component={Input}
+                                      placeholder="First Name"
+                                      validate={required}
+                                    />
+                                  </div>
+                                  <div className="col">
+                                    <Field
+                                      name={`${name}.lastName`}
+                                      component={Input}
+                                      placeholder="Last Name"
+                                      validate={required}
+                                    />
+                                  </div>
+                                  <div className="col">
+                                    <button 
+                                      className="btn btn-outline-danger" 
+                                      type="button" 
+                                      onClick={() => fields.remove(index)}
+                                    >
+                                      Remove
+                                    </button>
+                                  </div>
                                 </div>
-                                <div className="form-group col-md-4">
-                                <Field
-                                  className="form-control"
-                                  name={`${name}.firstName`}
-                                  component="input"
-                                  placeholder="First Name"
-                                />
-                                </div>
-                                <div className="form-group col-md-4">
-                                  <Field
-                                    className="form-control"
-                                    name={`${name}.lastName`}
-                                    component="input"
-                                    placeholder="Last Name"
-                                  />
-                                </div>
-                                <div className="form-group col-md-3">
-                                  <button 
-                                    className="btn btn-danger" 
-                                    type="button" 
-                                    onClick={() => fields.remove(index)}
-                                  >
-                                    Remove
-                                  </button>
-                                </div>
-                              </div>
-                            )}
-                          </Draggable>
-                        ))}
+                              )}
+                            </Draggable>
+                          ))}
+                        </div>
                       </div>
-                    </div>
-                  )}
-                </Droppable>
-              </DragDropContext>
-            )}
-          </FieldArray>
-          <div className="row mb-3">
-            <div className="col">
-              <button className="btn btn-primary mr-3" type="submit" disabled={submitting || pristine}>
-                Submit
-              </button>
-              <button
-                className="btn btn-warning"
-                type="button"
-                onClick={reset}
-                disabled={submitting || pristine}
-              >
-                Reset
-              </button>
+                    )}
+                  </Droppable>
+                </DragDropContext>
+              )}
+            </FieldArray>
+            <div className="row">
+              <div className="col">
+                <pre>{JSON.stringify(values, 0, 2)}</pre>
+              </div>
             </div>
-          </div>
-          <pre>{JSON.stringify(values, 0, 2)}</pre>
-        </form>
-      );
-    }}
-  />
-);
+            
+          </form>
+        );
+      }}
+    />
+  );
+}
 
 export default Template;

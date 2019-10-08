@@ -1,27 +1,43 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 
+import { createDataArray, removeDataArray } from '../../redux/modules/data'
 import Template from './Template'
 
 class ReactFinalForm extends React.Component {
+  componentWillUnmount() {
+    this.props.removeDataArray()
+  }
+
   render() {
+    const { dataArray, createDataArray, removeDataArray } = this.props;
     return (
       <div className="container mt-5">
-        <div className="row">
+        <div className="row mb-3">
           <div className="col">
             <div className="d-flex justify-content-center">
               <h1>react-final-form</h1>
             </div>
           </div>
         </div>
-        <Template />
+        <Template 
+          customProps={{ 
+            onRemoveDataArray: removeDataArray,
+            onCreateDataArray: createDataArray, 
+            dataArray 
+          }}  
+        />
       </div>
     );
   }
 }
 
 export default connect(
-  () => ({}),
-  {},
+  state => ({
+    dataArray: state.data.customers,
+  }),
+  {
+    createDataArray,
+    removeDataArray,
+  },
 )(ReactFinalForm);
