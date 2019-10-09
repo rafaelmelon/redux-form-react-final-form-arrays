@@ -1,47 +1,33 @@
-import React from "react";
-import { Form, Field } from "react-final-form";
+import React, { useState } from "react";
+import { Form, Field, FormSpy } from "react-final-form";
 import arrayMutators from "final-form-arrays";
 import { FieldArray } from "react-final-form-arrays";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
-import { Input } from '../../../components/index';
+import { required, getItemStyle, getListStyle, onSubmit, makeOnDragEndFunction } from '../../utils';
+import { Input } from '../../../components';
 
-const required = value => (value ? undefined : "Required");
-
-const getItemStyle = (isDragging, draggableStyle) => ({
-  background: isDragging ? "lightgreen" : "AliceBlue",
-  ...draggableStyle
-}); 
-
-const getListStyle = isDraggingOver => ({
-  background: isDraggingOver ? "lightblue" : "SteelBlue",
-});
-
-const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
-
-const onSubmit = async values => {
-  await sleep(300);
-  window.alert(JSON.stringify(values, 0, 2));
-};
-
-const makeOnDragEndFunction = fields => result => {
-  // dropped outside the list
-  if (!result.destination) {
-    return;
-  }
-  fields.swap(result.source.index, result.destination.index);
-};
 let nextId = 1;
 
 const Template = props => {
-  const { onRemoveDataArray, onCreateDataArray, dataArray } = props.customProps
-  
+  const [isSubscription, changeSubscription] = useState(false);
+  const { onRemoveDataArray, onCreateDataArray, dataArray, creating } = props.customProps
+
   const handlePopulate = callback => {
     if (dataArray) {
       dataArray.forEach(item => {
-        callback("customers", item)
-      })
+        callback("customers", item);
+      });
     }
+  }
+
+  const customSubscription = { 
+    values: false,
+    submitting: false, 
+    pristine: false, 
+    dirty: false,
+    dirtySinceLastSubmit: false,
+    invalid: false,
   }
 
   return (
@@ -50,14 +36,16 @@ const Template = props => {
       mutators={{
         ...arrayMutators
       }}
-      render={formProps => {
+      subscription={customSubscription}
+      render={renderProps => {
         const {
           handleSubmit,
-          form: { reset, mutators: { push, pop  } }, // injected from final-form-arrays above
+          form,
           pristine,
           submitting,
           values
-        } = formProps;
+        } = renderProps;
+        const { reset, mutators: { push, pop  } } = form;
 
         return (
           <form onSubmit={handleSubmit}>
@@ -96,22 +84,48 @@ const Template = props => {
                 </div>
               </div>
               <div className="col-md-2">
-                <Field
-                  name="customersLength"
-                  component={Input}
-                  placeholder="0"
-                  type="number"
-                />
+                {
+                  creating ? 
+                  <div className="spinner-border" role="status">
+                    <span className="sr-only">Loading...</span>
+                  </div> : 
+                  <Field
+                    name="customersLength"
+                    component={Input}
+                    placeholder="0"
+                    type="number"
+                  />
+                }
               </div>
               <div className="col">
                 <div className="d-flex justify-content-end">
-                  <button 
-                    className="btn btn-primary mr-3" 
-                    type="button" 
-                    onClick={() => onCreateDataArray(values.customersLength || 0)}
-                  >
-                    Create data
-                  </button>
+                  {isSubscription ? 
+                    <button 
+                      className="btn btn-primary mr-3" 
+                      type="button" 
+                      onClick={() => {
+                        changeSubscription(false)
+                      }}
+                    >
+                      Create data
+                    </button> :
+                    <FormSpy 
+                      subscription={{ values: true }}
+                    >
+                      {({ values }) => (
+                        <button 
+                          className="btn btn-primary mr-3" 
+                          type="button" 
+                          onClick={() => {
+                            onCreateDataArray(values && values.customersLength || 0)
+                            changeSubscription(true)
+                          }}
+                        >
+                          Create data
+                        </button>
+                      )}
+                    </FormSpy>
+                  }
                   <button 
                     className="btn btn-primary mr-3" 
                     type="button" 
@@ -131,7 +145,10 @@ const Template = props => {
                 </div>
               </div>
             </div>
-            <FieldArray name="customers">
+            <FieldArray 
+              name="customers"
+              subscription={customSubscription}
+            >
               {({ fields }) => (
                 <DragDropContext onDragEnd={makeOnDragEndFunction(fields)}>
                   <Droppable droppableId="droppable">

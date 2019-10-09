@@ -1,8 +1,8 @@
 import React from 'react';
 import { Route, Switch } from 'react-router-dom';
 
-import { Navbar } from '../components/index';
-import { Home, ReduxForm, ReactFinalForm } from '../containers/index';
+import { Navbar } from '../components';
+import { Home, ReduxForm, ReactFinalForm } from '../containers';
 
 const Routes = () => (
   <>

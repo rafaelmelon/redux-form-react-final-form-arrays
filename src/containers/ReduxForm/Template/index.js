@@ -2,33 +2,9 @@ import React from "react";
 import { Field, FieldArray, reduxForm } from 'redux-form'
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
-import { Input } from '../../../components/index';
+import { required, getItemStyle, getListStyle, onSubmit, makeOnDragEndFunction } from '../../utils';
+import { Input } from '../../../components';
 
-const required = value => (value ? undefined : "Required");
-
-const getItemStyle = (isDragging, draggableStyle) => ({
-  background: isDragging ? "lightgreen" : "AliceBlue",
-  ...draggableStyle
-}); 
-
-const getListStyle = isDraggingOver => ({
-  background: isDraggingOver ? "lightblue" : "SteelBlue",
-});
-
-const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
-
-const onSubmit = async values => {
-  await sleep(300);
-  window.alert(JSON.stringify(values, 0, 2));
-};
-
-const makeOnDragEndFunction = fields => result => {
-  // dropped outside the list
-  if (!result.destination) {
-    return;
-  }
-  fields.swap(result.source.index, result.destination.index);
-};
 let nextId = 1;
 
 const renderFields = ({ fields }) => (
@@ -68,7 +44,7 @@ const renderFields = ({ fields }) => (
                     )}
                   >
                     <div className="col">
-                      <label name={name}>Cust. #${index + 1}</label>
+                      <label name={name}>{`Cust. #${index + 1}`}</label>
                     </div>
                     <div className="col">
                       <Field
@@ -110,7 +86,7 @@ const renderFields = ({ fields }) => (
 
 const Template = props => {
   const { pristine, reset, submitting, array: { push, pop }, customProps, invalid } = props;
-  const { reduxFormValues, onRemoveDataArray, onPopulate, onCreateDataArray, dataArray } = customProps
+  const { reduxFormValues, onRemoveDataArray, onPopulate, onCreateDataArray, dataArray, creating } = customProps
 
   const isCustomersLength = reduxFormValues && reduxFormValues.customersLength;
 
@@ -156,12 +132,18 @@ const Template = props => {
           </div>
         </div>
         <div className="col-md-2">
-          <Field
-            name="customersLength"
-            component={Input}
-            placeholder="0"
-            type="number"
-          />
+          {
+            creating ? 
+            <div className="spinner-border" role="status">
+              <span className="sr-only">Loading...</span>
+            </div> : 
+            <Field
+              name="customersLength"
+              component={Input}
+              placeholder="0"
+              type="number"
+            />
+          }
         </div>
         <div className="col">
           <div className="d-flex justify-content-end">

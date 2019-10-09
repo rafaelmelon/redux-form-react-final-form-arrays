@@ -10,7 +10,7 @@ class ReactFinalForm extends React.Component {
   }
 
   render() {
-    const { dataArray, createDataArray, removeDataArray } = this.props;
+    const { dataArray, creating, createDataArray, removeDataArray } = this.props;
     return (
       <div className="container mt-5">
         <div className="row mb-3">
@@ -24,7 +24,8 @@ class ReactFinalForm extends React.Component {
           customProps={{ 
             onRemoveDataArray: removeDataArray,
             onCreateDataArray: createDataArray, 
-            dataArray 
+            dataArray, 
+            creating, 
           }}  
         />
       </div>
@@ -34,7 +35,8 @@ class ReactFinalForm extends React.Component {
 
 export default connect(
   state => ({
-    dataArray: state.data.customers,
+    dataArray: state.data.dataArray,
+    creating: state.data.creating,
   }),
   {
     createDataArray,
