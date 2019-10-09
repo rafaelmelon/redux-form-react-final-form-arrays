@@ -13,22 +13,14 @@ const Template = props => {
   const [isSubscription, changeSubscription] = useState(false);
   const { onRemoveDataArray, onCreateDataArray, dataArray, creating } = props.customProps
 
-  const handlePopulate = callback => {
-    if (dataArray) {
-      dataArray.forEach(item => {
-        callback("customers", item);
-      });
-    }
-  }
-
   const customSubscription = { 
     values: false,
     submitting: false, 
-    pristine: false, 
+    pristine: false,
+    validating: false,
     dirty: false,
-    dirtySinceLastSubmit: false,
-    invalid: false,
-  }
+    touched: false,
+  } 
 
   return (
     <Form
@@ -36,6 +28,7 @@ const Template = props => {
       mutators={{
         ...arrayMutators
       }}
+      initialValues={{ customers: dataArray }}
       subscription={customSubscription}
       render={renderProps => {
         const {
@@ -45,7 +38,7 @@ const Template = props => {
           submitting,
           values
         } = renderProps;
-        const { reset, mutators: { push, pop  } } = form;
+        const { reset, mutators: { push, pop } } = form;
 
         return (
           <form onSubmit={handleSubmit}>
@@ -76,7 +69,7 @@ const Template = props => {
                   <button
                     className="btn btn-secondary"
                     type="button"
-                    onClick={reset}
+                    onClick={() => reset()}
                     disabled={submitting || pristine}
                   >
                     Reset
@@ -103,11 +96,9 @@ const Template = props => {
                     <button 
                       className="btn btn-primary mr-3" 
                       type="button" 
-                      onClick={() => {
-                        changeSubscription(false)
-                      }}
+                      onClick={() => changeSubscription(false)}
                     >
-                      Create data
+                      Populate
                     </button> :
                     <FormSpy 
                       subscription={{ values: true }}
@@ -121,19 +112,11 @@ const Template = props => {
                             changeSubscription(true)
                           }}
                         >
-                          Create data
+                          Populate
                         </button>
                       )}
                     </FormSpy>
                   }
-                  <button 
-                    className="btn btn-primary mr-3" 
-                    type="button" 
-                    onClick={() => handlePopulate(push)}
-                    disabled={!dataArray}
-                  >
-                    Populate
-                  </button>
                   <button 
                     className="btn btn-outline-danger" 
                     type="button" 
@@ -161,7 +144,7 @@ const Template = props => {
                         <div className="col-md-4 mt-3">
                           <Field
                             className="form-control"
-                            name="Company"
+                            name="company"
                             component={Input}
                             placeholder="Company"
                             validate={required}
@@ -233,7 +216,6 @@ const Template = props => {
                 <pre>{JSON.stringify(values, 0, 2)}</pre>
               </div>
             </div>
-            
           </form>
         );
       }}

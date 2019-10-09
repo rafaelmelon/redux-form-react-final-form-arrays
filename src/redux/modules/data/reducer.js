@@ -1,34 +1,77 @@
 import { 
-  DATA_CREATE_ARRAY, 
-  DATA_CREATING_ARRAY, 
-  DATA_REMOVE_ARRAY 
+  DATA_CREATE_REDUX_FORM, 
+  DATA_CREATING_REDUX_FORM, 
+  DATA_REMOVE_REDUX_FORM,
+  DATA_CREATE_REACT_FINAL_FORM, 
+  DATA_CREATING_REACT_FINAL_FORM, 
+  DATA_REMOVE_REACT_FINAL_FORM,
 } from './action';
 
 const initialState = {
-  dataArray: null,
-  creating: false,
+  reduxForm: {
+    dataArray: null,
+    creating: false,
+  },
+  reactFinalForm: {
+    dataArray: null,
+    creating: false,
+  }
 };
 
 const reducer = (state = initialState, action) => {
   switch (action.type) {
-    case DATA_CREATE_ARRAY: {
+    case DATA_CREATE_REDUX_FORM: {
       return { 
         ...state, 
-        dataArray: action.payload,
-        creating: false,
+        reduxForm: {
+          dataArray: action.payload,
+          creating: false,
+        },
       };
     }
-    case DATA_CREATING_ARRAY: {
+    case DATA_CREATING_REDUX_FORM: {
       return { 
         ...state, 
-        creating: true,
+        reduxForm: {
+          ...state.reduxForm,
+          creating: false,
+        },
       };
     }
-    case DATA_REMOVE_ARRAY: {
+    case DATA_REMOVE_REDUX_FORM: {
       return { 
         ...state, 
-        dataArray: null,
-        creating: false,
+        reduxForm: {
+          dataArray: null,
+          creating: false,
+        },
+      };
+    }
+    case DATA_CREATE_REACT_FINAL_FORM: {
+      return { 
+        ...state, 
+        reactFinalForm: {
+          dataArray: action.payload,
+          creating: false,
+        },
+      };
+    }
+    case DATA_CREATING_REACT_FINAL_FORM: {
+      return { 
+        ...state, 
+        reactFinalForm: {
+          ...state.reactFinalForm,
+          creating: false,
+        },
+      };
+    }
+    case DATA_REMOVE_REACT_FINAL_FORM: {
+      return { 
+        ...state, 
+        reactFinalForm: {
+          dataArray: null,
+          creating: false,
+        },
       };
     }
     default: {

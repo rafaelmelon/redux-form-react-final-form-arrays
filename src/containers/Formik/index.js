@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
-import { createDataArray, removeDataArray } from '../../redux/modules/data'
+import { createDataReactFinalForm, removeDataReactFinalForm } from '../../redux/modules/data'
 import Template from './Template'
 
 class Formik extends React.Component {
@@ -10,7 +10,7 @@ class Formik extends React.Component {
   }
 
   render() {
-    const { dataArray, createDataArray, removeDataArray } = this.props;
+    const { dataArray, createDataReactFinalForm, removeDataReactFinalForm } = this.props;
     return (
       <div className="container mt-5">
         <div className="row mb-3">
@@ -22,8 +22,8 @@ class Formik extends React.Component {
         </div>
         <Template 
           customProps={{ 
-            onRemoveDataArray: removeDataArray,
-            onCreateDataArray: createDataArray, 
+            onRemoveDataArray: removeDataReactFinalForm,
+            onCreateDataArray: createDataReactFinalForm, 
             dataArray 
           }}  
         />
@@ -37,7 +37,7 @@ export default connect(
     dataArray: state.data.customers,
   }),
   {
-    createDataArray,
-    removeDataArray,
+    createDataReactFinalForm,
+    removeDataReactFinalForm,
   },
 )(Formik);

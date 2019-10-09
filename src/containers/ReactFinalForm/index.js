@@ -1,16 +1,16 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
-import { createDataArray, removeDataArray } from '../../redux/modules/data'
+import { createDataReactFinalForm, removeDataReactFinalForm } from '../../redux/modules/data'
 import Template from './Template'
 
 class ReactFinalForm extends React.Component {
-  componentWillUnmount() {
-    this.props.removeDataArray()
-  }
+  // componentWillUnmount() {
+  //   this.props.removeDataReactFinalForm()
+  // }
 
   render() {
-    const { dataArray, creating, createDataArray, removeDataArray } = this.props;
+    const { dataArray, creating, createDataReactFinalForm, removeDataReactFinalForm } = this.props;
     return (
       <div className="container mt-5">
         <div className="row mb-3">
@@ -22,8 +22,8 @@ class ReactFinalForm extends React.Component {
         </div>
         <Template 
           customProps={{ 
-            onRemoveDataArray: removeDataArray,
-            onCreateDataArray: createDataArray, 
+            onRemoveDataArray: removeDataReactFinalForm,
+            onCreateDataArray: createDataReactFinalForm, 
             dataArray, 
             creating, 
           }}  
@@ -35,11 +35,11 @@ class ReactFinalForm extends React.Component {
 
 export default connect(
   state => ({
-    dataArray: state.data.dataArray,
-    creating: state.data.creating,
+    dataArray: state.data.reactFinalForm.dataArray,
+    creating: state.data.reactFinalForm.creating,
   }),
   {
-    createDataArray,
-    removeDataArray,
+    createDataReactFinalForm,
+    removeDataReactFinalForm,
   },
 )(ReactFinalForm);

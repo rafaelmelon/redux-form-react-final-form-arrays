@@ -19,7 +19,7 @@ const renderFields = ({ fields }) => (
           <div className="col-md-4 mt-3">
             <Field
               className="form-control"
-              name="Company"
+              name="company"
               component={Input}
               placeholder="Company"
               validate={required}
@@ -86,7 +86,7 @@ const renderFields = ({ fields }) => (
 
 const Template = props => {
   const { pristine, reset, submitting, array: { push, pop }, customProps, invalid } = props;
-  const { reduxFormValues, onRemoveDataArray, onPopulate, onCreateDataArray, dataArray, creating } = customProps
+  const { reduxFormValues, onRemoveDataArray, onCreateDataArray, dataArray, creating } = customProps
 
   const isCustomersLength = reduxFormValues && reduxFormValues.customersLength;
 
@@ -152,14 +152,6 @@ const Template = props => {
               type="button" 
               onClick={() => onCreateDataArray(isCustomersLength || 0)}
             >
-              Create data
-            </button>
-            <button 
-              className="btn btn-primary mr-3" 
-              type="button" 
-              onClick={onPopulate}
-              disabled={!dataArray}
-            >
               Populate
             </button>
             <button 
@@ -185,4 +177,5 @@ const Template = props => {
 
 export default reduxForm({
   form: 'reduxForm',
+  enableReinitialize: true
 })(Template)
